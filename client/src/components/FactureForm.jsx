@@ -6,7 +6,8 @@ function FactureForm({ clients, refreshFactures }) {
   const [form, setForm] = useState({
     client_id: '',
     montant: '',
-    date: ''
+    date: '',
+    type: 'classique'
   });
 
   const handleChange = (e) => {
@@ -22,47 +23,65 @@ function FactureForm({ clients, refreshFactures }) {
     axios.post('http://localhost:5000/api/factures', form)
       .then(() => {
         refreshFactures();
-        setForm({ client_id: '', montant: '', date: '' });
+        setForm({ client_id: '', montant: '', date: '', type: 'classique' });
       });
   };
 
   return (
     <div>
 
-      <h3>➕ Ajouter facture</h3>
+      <h3 style={{marginBottom: '15px'}}>➕ Ajouter un document</h3>
 
-      <select 
-        className="input"
-        name="client_id"
-        value={form.client_id}
-        onChange={handleChange}
-      >
-        <option value="">Choisir client</option>
-        {clients.map(c => (
-          <option key={c.id} value={c.id}>
-            {c.name}
-          </option>
-        ))}
-      </select>
+      <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '10px'}}>
+        <select 
+          className="input"
+          name="type"
+          value={form.type}
+          onChange={handleChange}
+          style={{flex: 1}}
+        >
+          <option value="classique">Facture Classique</option>
+          <option value="devis">Devis</option>
+        </select>
 
-      <input 
-        className="input"
-        name="montant"
-        placeholder="Montant"
-        value={form.montant}
-        onChange={handleChange}
-      />
+        <select 
+          className="input"
+          name="client_id"
+          value={form.client_id}
+          onChange={handleChange}
+          style={{flex: 1}}
+        >
+          <option value="">Choisir client</option>
+          {clients.map(c => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      <input 
-        className="input"
-        type="date"
-        name="date"
-        value={form.date}
-        onChange={handleChange}
-      />
+      <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '10px'}}>
+        <input 
+          className="input"
+          name="montant"
+          placeholder="Montant (DH)"
+          value={form.montant}
+          onChange={handleChange}
+          style={{flex: 1}}
+        />
 
-      <button className="button" onClick={addFacture}>
-        Ajouter
+        <input 
+          className="input"
+          type="date"
+          name="date"
+          value={form.date}
+          onChange={handleChange}
+          style={{flex: 1}}
+        />
+      </div>
+
+      <button className="button" style={{width: '100%'}} onClick={addFacture}>
+        Ajouter le document
       </button>
 
     </div>

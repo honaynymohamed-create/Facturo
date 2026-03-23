@@ -6,37 +6,56 @@ import Clients from './pages/Clients';
 import Factures from './pages/Factures';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import Profil from './pages/Profil';
 import './App.css';
-
 
 function App() {
 
   const [clients, setClients] = useState([]);
   const [factures, setFactures] = useState([]);
-  const [isAuth, setIsAuth] = useState(false); // 🔐
+  const [user, setUser] = useState(null); // replaces isAuth
+
 
   const getClients = () => {
+    // Les clients ne devraient pas voir la liste des autres clients
+    if (user?.role === 'client') return;
+
     axios.get('http://127.0.0.1:5000/api/clients')
-      .then(res => setClients(res.data));
+      .then(res => setClients(res.data))
+      .catch(err => console.error(err));
   };
 
   const getFactures = () => {
     axios.get('http://127.0.0.1:5000/api/factures')
-      .then(res => setFactures(res.data));
+      .then(res => {
+        if (user?.role === 'client') {
+          // Filtrer les factures du client connecté
+          const myFactures = res.data.filter(f => f.client_id === user.client_id);
+          setFactures(myFactures);
+        } else {
+          setFactures(res.data);
+        }
+      })
+      .catch(err => console.error(err));
   };
 
   useEffect(() => {
-    if (isAuth) {
+    if (user) {
       getClients();
       getFactures();
     }
-  }, [isAuth]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
-  return (
+  const handleLogout = () => {
+    setUser(null);
+  };
+
+return (
   <div className="app-container">
 
-    {!isAuth ? (
-      <Login setIsAuth={setIsAuth} />
+    {!user ? (
+      <Login setAuthUser={setUser} />
     ) : (
       <>
         {/* NAVBAR */}
@@ -44,32 +63,48 @@ function App() {
           <div className="logo">Facturo</div>
 
           <div className="links">
-            <Link to="/dashboard">Dashboard</Link>
-            <Link to="/clients">Clients</Link>
-            <Link to="/factures">Factures</Link>
+            {user.role === 'admin' && (
+              <>
+                <Link to="/dashboard">Dashboard</Link>
+                <Link to="/clients">Clients</Link>
+                <Link to="/factures">Factures</Link>
+              </>
+            )}
+            {user.role === 'client' && (
+              <>
+                <Link to="/factures">Mes Factures</Link>
+                <Link to="/profil">Mon Profil</Link>
+              </>
+            )}
+            <button className="button" style={{ marginLeft: '20px', padding: '6px 12px', background: '#ef4444' }} onClick={handleLogout}>Déconnexion</button>
           </div>
         </div>
 
         {/* CONTENT */}
         <div className="main-content">
           <Routes>
-            <Route path="/clients" element={
-              <Clients clients={clients} refreshClients={getClients} />
-            } />
 
-            <Route path="/factures" element={
-              <Factures 
-                clients={clients} 
-                factures={factures} 
-                refreshFactures={getFactures} 
-              />
-            } />
-<Route 
-  path="/dashboard" 
-  element={<Dashboard clients={clients} factures={factures} />} 
-/>
+            {user.role === 'admin' ? (
+              <>
+                <Route path="/" element={<Navigate to="/dashboard" />} />
+                <Route path="/dashboard" element={<Dashboard user={user} clients={clients} factures={factures} />} />
+                <Route path="/clients" element={<Clients clients={clients} refreshClients={getClients} />} />
+                <Route path="/factures" element={<Factures user={user} clients={clients} factures={factures} refreshFactures={getFactures} />} />
+                <Route path="*" element={<Navigate to="/dashboard" />} />
+              </>
+            ) : (
+              <>
+                <Route path="/" element={<Navigate to="/dashboard" />} />
+                <Route path="/dashboard" element={<Dashboard user={user} clients={clients} factures={factures} refreshFactures={getFactures} />} />
+                <Route path="/factures" element={<Factures user={user} clients={clients} factures={factures} refreshFactures={getFactures} />} />
 
-            <Route path="*" element={<Navigate to="/clients" />} />
+                {/* Vrai Profil route */}
+                <Route path="/profil" element={<Profil user={user} setAuthUser={setUser} />} />
+
+                <Route path="*" element={<Navigate to="/dashboard" />} />
+              </>
+            )}
+
           </Routes>
         </div>
       </>
@@ -77,8 +112,6 @@ function App() {
 
   </div>
 );
-
-
 }
 
 export default App;

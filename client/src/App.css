@@ -1,25 +1,26 @@
 /* =========================
-   🎯 VARIABLES
+   🎯 VARIABLES (Aesthetic Palette)
 ========================= */
 :root {
-  --blue: #38BDF8;
-  --blue-dark: #0EA5E9;
-  --bg: #F9FAFB;
-  --white: #FFFFFF;
-  --black: #0F172A;
-  --gray: #64748B;
-  --border: #E5E7EB;
+  --blue: #6366f1;
+  --blue-dark: #4f46e5;
+  --bg: #f3f4f6;
+  --white: #ffffff;
+  --black: #1f2937;
+  --gray: #6b7280;
+  --border: #e5e7eb;
 
-  --success-bg: #DCFCE7;
+  --success-bg: #dcfce7;
   --success-text: #166534;
 
-  --warning-bg: #FEF9C3;
-  --warning-text: #854D0E;
+  --warning-bg: #fef9c3;
+  --warning-text: #854d0e;
 
-  --danger-bg: #FEE2E2;
-  --danger-text: #991B1B;
+  --danger-bg: #fee2e2;
+  --danger-text: #991b1b;
 
-  --shadow: 0px 6px 20px rgba(0,0,0,0.05);
+  --shadow: 0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0px 10px 15px -3px rgba(0, 0, 0, 0.1), 0px 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 /* =========================
@@ -58,7 +59,6 @@ body {
   font-weight: bold;
   font-size: 22px;
   color: var(--blue-dark);
-
 }
 
 .links a {
@@ -103,7 +103,7 @@ h2 {
 .card {
   background: var(--white);
   border-radius: 14px;
-  padding: 20px;
+  padding: 25px;
   margin-bottom: 20px;
   box-shadow: var(--shadow);
   transition: 0.2s;
@@ -117,7 +117,7 @@ h2 {
 /* =========================
    📋 TABLE
 ========================= */
-.table {
+table {
   width: 100%;
   border-collapse: collapse;
   background: var(--white);
@@ -126,7 +126,7 @@ h2 {
   box-shadow: var(--shadow);
 }
 
-.table th {
+table th {
   background: #F1F5F9;
   font-size: 12px;
   text-transform: uppercase;
@@ -134,43 +134,47 @@ h2 {
   text-align: left;
 }
 
-.table td {
+table td {
   padding: 16px 12px;
   border-bottom: 1px solid var(--border);
+  font-size: 14px;
 }
 
-/* hover lignes */
-.table tbody tr {
+table tbody tr {
   transition: 0.2s;
 }
 
-.table tbody tr:hover {
+table tbody tr:hover {
   background: #f1f5f9;
 }
 
 /* =========================
-   🏷️ BADGES
+   🏷️ BADGES (FINAL)
 ========================= */
 .badge {
-  padding: 5px 12px;
+  padding: 6px 12px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 500;
+  display: inline-block;
 }
 
-.badge.paid {
-  background: var(--success-bg);
-  color: var(--success-text);
-}
-
-.badge.pending {
+/* 🟡 En attente */
+.badge.en-attente {
   background: var(--warning-bg);
   color: var(--warning-text);
 }
 
-.badge.late {
+/* 🔴 En retard */
+.badge.en-retard {
   background: var(--danger-bg);
   color: var(--danger-text);
+}
+
+/* 🟢 Payé */
+.badge.payee {
+  background: var(--success-bg);
+  color: var(--success-text);
 }
 
 /* =========================
@@ -236,7 +240,6 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
-  
 }
 
 .login-box {
@@ -255,6 +258,7 @@ h2 {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -273,7 +277,91 @@ h2 {
 }
 
 @keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.5; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* =========================
+   🪟 MODALS
+========================= */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.modal-content {
+  width: 700px;
+  max-width: 95%;
+  padding: 40px;
+  background: var(--white);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-body p {
+  margin: 10px 0;
+  font-size: 15px;
+  color: var(--black);
+}
+
+.view-btn {
+  background: transparent;
+  color: var(--blue-dark);
+  border: 1px solid var(--blue-dark);
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.view-btn:hover {
+  background: var(--blue-dark);
+  color: white;
+}
+
+/* =========================
+   🖨️ PRINT STYLES
+========================= */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  
+  .printable-area, .printable-area * {
+    visibility: visible;
+  }
+  
+  .printable-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+    box-shadow: none;
+    background: white;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
 }
